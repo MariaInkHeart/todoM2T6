@@ -7,21 +7,20 @@ import styles from "./styles.module.css";
 const Display = () => {
   const { number, storedNumber, functionType } = useContext(NumberContext);
   const { doMath } = useContext(NumberContext);
-  // const [theme, setTheme] = useState("default");
+  // const { setTheme } = useState(false);
 
-  // const handleClick = () => {
-  //   setTheme("red");
-  //   // useContext(NumberContext);
-  // };theme === "red" ? styles.red : styles.green
+  const handleClick = () => {
+    doMath();
+  };
 
   return (
     <div>
-      <p className={styles.red}>
+      <p className={handleClick === true ? styles.red : styles.green}>
         {!storedNumber
           ? `${number}`
           : `${storedNumber} ${functionType} ${number}`}
       </p>
-      <button className="white-button" type="button" onClick={() => doMath()}>
+      <button className="white-button" type="button" onClick={handleClick}>
         =
       </button>
     </div>
