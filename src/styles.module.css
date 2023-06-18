@@ -1,0 +1,17 @@
+.display {
+  padding: 16px;
+  text-align: right;
+  background-color: var(--dark);
+  color: var(--light);
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.playdis {
+  padding: 16px;
+  text-align: right;
+  background-color: var(--dark);
+  color: green;
+  font-size: 24px;
+  font-weight: 300;
+}
