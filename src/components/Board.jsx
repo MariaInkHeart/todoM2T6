@@ -1,5 +1,6 @@
 import React from 'react';
 import Square from './Square';
+import PropTypes from 'prop-types';
 
 const Board = ({squares, click})=>{
     return(
@@ -10,6 +11,11 @@ const Board = ({squares, click})=>{
 
         </div>
     )
+};
+
+Board.propTypes ={
+    squares: PropTypes.array,
+    click: PropTypes.func,
 }
 
 export default Board

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Board from './Board';
 import { calculateWinner } from '../winner';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 const Game = ()=>{
     const [board, setBoard] = useState(Array(9).fill(null));
@@ -16,9 +16,7 @@ const Game = ()=>{
         setXIsNext(!xIsNext)
     }
 
-handleClick.propTypes ={
-        index: PropTypes.number
-    }
+
     const startNewGame = () => {
         return (
           <button
@@ -42,7 +40,7 @@ handleClick.propTypes ={
 
     return(
         <div className='wrapper'>
-            <p className='gameInfo'>{totalFinal()}</p>
+            <div className='gameInfo'>{totalFinal()}</div>
 <Board squares={board} click={handleClick}/>
 {startNewGame()}
         </div>
