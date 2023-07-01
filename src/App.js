@@ -1,5 +1,5 @@
 import { useStore } from "./useStore";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const sendFormData = (formData) => {
   console.log(formData);
@@ -10,22 +10,25 @@ function App() {
 
   const [passFError, setPassFError] = useState(null);
 
-  const verifyPasses = () => {
-    let pass1 = document.getElementsByName("passF");
-    let pass2 = document.getElementsByName("passTrue");
-    let match = null;
+  const handleClick = (event) => {
+    let { name, value } = event.target;
     let newErrorPassF = null;
 
-    if (pass1 !== pass2) {
-      match = false;
-      newErrorPassF = "Пароли не совпадают";
-    } else if (pass1 === pass2) {
-      match = true;
-      newErrorPassF = "";
-      console.log(getState());
+    if (!value) {
+      newErrorPassF = "Введите пароль";
+    } else if (name === "passF" || name === "passTrue") {
+      if (!passF || passF !== passTrue) {
+        newErrorPassF = "Пароли не совпадают";
+      }
     }
     setPassFError(newErrorPassF);
-    return match;
+  };
+
+  const onPassFBlur = ({ target }) => {
+    updateState("passF", target.value);
+    if (target.value.length < 3) {
+      setPassFError("Неверный пароль. Должно быть не меньше 3 символов");
+    }
   };
 
   // проверка почты
@@ -37,16 +40,17 @@ function App() {
 
     let newError = null;
 
-    if (target.value.length > 30) {
-      newError = "Неверный логин. Должно быть не больше 30 символов";
+    if (!/^[w_]*$/.test(target.value)) {
+      newError =
+        "Неверная почта. Проверьте наличие @ и имени почтового сервера";
     }
 
     setEmailError(newError);
   };
 
   const onEmailBlur = ({ target }) => {
-    if (target.value.length < 3) {
-      setEmailError("Неверный логин. Должно быть не меньше 3 символов");
+    if (target.value.length < 1) {
+      setEmailError("Введите почту");
     }
   };
 
@@ -60,12 +64,19 @@ function App() {
 
   const { email, passF, passTrue } = getState();
 
+  //autoFocus
+  const autoFocus = useRef(null);
+
+  //отправка данных
+  const sendAllData = () => {
+    console.log(getState());
+  };
+
   return (
     <div className="wrapper">
       <h1>REGISTRATION</h1>
       <form onSubmit={onSubmit}>
         {emailError && <div className="errorLabel">{emailError}</div>}
-        {passFError && <div className="errorLabel">{passFError}</div>}
         <input
           className="input"
           name="email"
@@ -75,24 +86,30 @@ function App() {
           onChange={onEmailChange}
           onBlur={onEmailBlur}
         />
-
+        {passFError && <div className="errorLabel">{passFError}</div>}
         <input
           className="input"
           name="passF"
-          type="passF"
+          type="password"
           placeholder="PASSWORD"
           value={passF}
-          onChange={({ target }) => updateState("passF", target.value)}
+          onBlur={onPassFBlur}
         />
         <input
           className="input"
           name="passTrue"
-          type="passTrue"
+          type="password"
           placeholder="CONFIRM PASSWORD"
           value={passTrue}
           onChange={({ target }) => updateState("passTrue", target.value)}
+          onBlur={handleClick}
         />
-        <button type="submit" onClick={verifyPasses} disabled={!!emailError}>
+        <button
+          type="submit"
+          onClick={sendAllData}
+          disabled={!!emailError || !!passFError}
+          ref={autoFocus}
+        >
           REGISTRATE
         </button>
       </form>
