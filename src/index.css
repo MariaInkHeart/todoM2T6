@@ -1,19 +1,20 @@
 .wrapper {
-  background-color: rgb(106, 223, 106);
+  background-color: rgb(178, 173, 231);
   display: flex;
-  justify-items: center;
-  align-items: center;
+  /* justify-items: center;
+  align-items: center; */
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  font-size: 25px;
 }
 
 .input {
   margin: 20px;
 }
 
-.errorLabel {
-  background-color: rgb(205, 61, 59);
+.header {
+  background-color: rgb(88, 51, 97);
   display: flex;
   justify-items: center;
   align-items: center;
