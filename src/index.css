@@ -9,8 +9,22 @@
   font-size: 25px;
 }
 
-.input {
+.add-line {
   margin: 20px;
+  width: 75%;
+}
+
+.search-line {
+  margin: 20px;
+  width: 75%;
+}
+
+.add-input {
+  width: 50%;
+}
+
+.search-input {
+  width: 50%;
 }
 
 .header {
