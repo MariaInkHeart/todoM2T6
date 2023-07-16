@@ -31,7 +31,7 @@ export const App = () => {
   };
 
   const reqUpdate = () => {
-    fetch("http://localhost:3005/todos/001", {
+    fetch(`http://localhost:3005/todos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify({
@@ -46,7 +46,7 @@ export const App = () => {
   };
 
   const deleteTodo = () => {
-    fetch("http://localhost:3005/todos/001", {
+    fetch(`http://localhost:3005/todos/${id}`, {
       method: "DELETE",
     })
       .then((rawResp) => rawResp.json())
@@ -57,22 +57,25 @@ export const App = () => {
   };
 
   //ПОИСК ДЕЛ
-  const [searchTodo, setSearchTodo] = useState("");
-  const [filteredTodos, setFilteredTodos] = useState(todos);
-
-  const todoSearch = (event) => {
-    setSearchTodo(event.target.value);
-    refreshTodos();
-  };
-
-  useEffect(() => {
-    setFilteredTodos((todos) => todos.filter.includes(searchTodo));
-  }, [searchTodo]);
+  const [searchedTodoValue, setSearchedTodoValue] = useState("");
+  const [searchedTodo, setSearchedTodo] = useState([]);
+  const todoSearch = useEffect(() => {
+    fetch(`http://localhost:3005/todos?name=${searchedTodoValue}`)
+      .then((searchedData) => searchedData.json())
+      .then((searchedTodos) => {
+        setSearchedTodo(searchedTodos);
+      });
+  }, [searchedTodoValue]);
 
   // ФИЛЬТР
-  const filterTodos = () => {
-    //код фильтра
-  };
+
+  const filterTodos = useEffect(() => {
+    fetch("http://localhost:3005/todos?_sort=name&_order=asc")
+      .then((filteredData) => filteredData.json())
+      .then((filteredTodos) => {
+        setTodos(filteredTodos);
+      });
+  }, [refresh]);
 
   return (
     <div className="wrapper">
@@ -94,18 +97,23 @@ export const App = () => {
           className="search-input"
           variant="outlined"
           placeholder="SEARCH"
-          onChange={todoSearch}
-          value={searchTodo}
+          onChange={(event) => {
+            setSearchedTodoValue(event.target.value);
+          }}
+          value={searchedTodoValue}
         />
-        {/* {filteredTodos.map(({ id, name }) => (
+        <button onClick={todoSearch}>ПОИСК</button>
+      </div>
+      <ul>
+        {searchedTodo.map(({ id, name }) => (
           <div>
             <li key={id}>{name}</li>
             <button onClick={reqUpdate}>Отметить сделанным</button>
             <button onClick={deleteTodo}>Удалить</button>
           </div>
-        ))} */}
-        {/* <button>SEARCH</button> */}
-      </div>
+        ))}
+      </ul>
+
       <ul>
         {todos.map(({ id, name }) => (
           <div>

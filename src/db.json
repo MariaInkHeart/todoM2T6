@@ -1,28 +1,8 @@
 {
   "todos": [
     {
-      "name": "test 001",
+      "name": "test",
       "id": "001"
-    },
-    {
-      "name": "abc",
-      "id": "KyM-Wpy"
-    },
-    {
-      "name": "bcd",
-      "id": "QmIRsIN"
-    },
-    {
-      "name": "cde",
-      "id": "vpPrPyo"
-    },
-    {
-      "name": "art",
-      "id": "HQ8fpoa"
-    },
-    {
-      "name": "zed",
-      "id": "av5di5K"
     }
   ]
 }
