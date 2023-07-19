@@ -68,15 +68,15 @@ export const App = () => {
   }, [searchedTodoValue]);
 
   // ФИЛЬТР
-  const [isTouched, setIsTouched] = useState(false);
+  // const [isTouched, setIsTouched] = useState(false);
 
   const filterTodos = useEffect(() => {
     fetch("http://localhost:3005/todos?_sort=name&_order=asc")
       .then((filteredData) => filteredData.json())
       .then((filteredTodos) => {
         setTodos(filteredTodos);
-      })
-      .finally(() => setIsTouched(true));
+      });
+    // .finally(() => setIsTouched(true));
   }, [refresh]);
 
   return (
@@ -106,27 +106,24 @@ export const App = () => {
         />
         <button onClick={todoSearch}>ПОИСК</button>
       </div>
-      {[!isTouched] ? (
-        <ul>
-          {todos.map(({ id, name }) => (
-            <div>
-              <li key={id}>{name}</li>
-              <button onClick={reqUpdate}>Отметить сделанным</button>
-              <button onClick={deleteTodo}>Удалить</button>
-            </div>
-          ))}
-        </ul>
-      ) : (
-        <ul>
-          {searchedTodo.map(({ id, name }) => (
-            <div>
-              <li key={id}>{name}</li>
-              <button onClick={reqUpdate(id)}>Отметить сделанным</button>
-              <button onClick={deleteTodo(id)}>Удалить</button>
-            </div>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {searchedTodo.map(({ id, name }) => (
+          <div>
+            <li key={id}>{name}</li>
+            <button onClick={reqUpdate}>Отметить сделанным</button>
+            <button onClick={deleteTodo}>Удалить</button>
+          </div>
+        ))}
+      </ul>
+      <ul>
+        {todos.map(({ id, name }) => (
+          <div>
+            <li key={id}>{name}</li>
+            <button onClick={reqUpdate}>Отметить сделанным</button>
+            <button onClick={deleteTodo}>Удалить</button>
+          </div>
+        ))}
+      </ul>
 
       <button onClick={filterTodos}>Фильтр</button>
     </div>
