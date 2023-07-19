@@ -1,8 +1,10 @@
 {
-  "todos": [
-    {
-      "name": "test",
-      "id": "001"
+  "todos": {
+    "001":{
+      "name": "test"
+    },
+    "002":{
+      "name": "test2"
     }
-  ]
+  }
 }
