@@ -1,83 +1,93 @@
 import { useEffect, useState } from "react";
-import {
-  ref,
-  onValue,
-  push,
-  set,
-  remove,
-  query,
-  orderByValue,
-} from "firebase/database";
-import { db } from "./firebase";
 
 export const App = () => {
   //ОСНОВНОЙ КОД
-  const [todos, setTodos] = useState({});
-  // const [refresh, setRefresh] = useState(false);
-  // const refreshTodos = () => setRefresh(!refresh);
+  const [todos, setTodos] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+  const refreshTodos = () => setRefresh(!refresh);
   const [todoValue, setTodoValue] = useState("");
+  const [isTouched, setIsTouched] = useState(false);
 
   useEffect(() => {
-    const todoDbRef = ref(db, "todos");
-    return onValue(todoDbRef, (snapshot) => {
-      const loadedTodos = snapshot.val() || {};
-      console.log(loadedTodos);
-      setTodos(loadedTodos);
-    });
-  }, []);
+    if (!isTouched) {
+      fetch("http://localhost:3005/todos")
+        .then((loadedData) => loadedData.json())
+        .then((loadedTodos) => {
+          setTodos(loadedTodos);
+        });
+    } else {
+      fetch("http://localhost:3005/todos?_sort=name&_order=asc")
+        .then((filteredData) => filteredData.json())
+        .then((filteredTodos) => {
+          setTodos(filteredTodos);
+        })
+        .finally(() => setIsTouched(false));
+    }
+  }, [refresh]);
 
   const addTodo = () => {
-    const pushDbRef = ref(db, "todos");
-    push(pushDbRef, {
-      name: todoValue,
-    }).then((response) => {
-      console.log("added", response);
-    });
+    fetch("http://localhost:3005/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify({
+        name: todoValue,
+      }),
+    })
+      .then((rawResp) => rawResp.json())
+      .then((response) => {
+        console.log("added", response);
+        refreshTodos();
+      });
   };
 
   const reqUpdate = (id) => {
-    const updateDbRef = ref(db, `todos/${id}`);
-
-    set(updateDbRef, {
-      name: "Выполнено",
-    }).then((response) => {
-      console.log("done update", response);
-    });
+    fetch(`http://localhost:3005/todos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify({
+        name: "Выполнено",
+      }),
+    })
+      .then((rawResp) => rawResp.json())
+      .then((response) => {
+        console.log("done update", response);
+        refreshTodos();
+      });
   };
 
   const deleteTodo = (id) => {
-    const deleteDbRef = ref(db, `todos/${id}`);
-
-    remove(deleteDbRef).then((response) => {
-      console.log("delete update", response);
-    });
+    fetch(`http://localhost:3005/todos/${id}`, {
+      method: "DELETE",
+    })
+      .then((rawResp) => rawResp.json())
+      .then((response) => {
+        console.log("delete update", response);
+        refreshTodos();
+      });
   };
 
   //ПОИСК ДЕЛ
   const [searchedTodoValue, setSearchedTodoValue] = useState("");
-  const [searchedTodo, setSearchedTodo] = useState({});
-
-  const todoSearch = useEffect((searchedTodoValue) => {
-    const searchDbRef = ref(db, `${searchedTodoValue}`);
-    return onValue(searchDbRef, (snapshot) => {
-      const searchTodo = snapshot.val() || {};
-      setSearchedTodo(searchTodo);
-    });
-  }, []);
+  const [searchedTodo, setSearchedTodo] = useState([]);
+  const todoSearch = useEffect(() => {
+    fetch(`http://localhost:3005/todos?name=${searchedTodoValue}`)
+      .then((searchedData) => searchedData.json())
+      .then((searchedTodos) => {
+        setSearchedTodo(searchedTodos);
+      });
+  }, [searchedTodoValue]);
 
   // ФИЛЬТР
   // const [isTouched, setIsTouched] = useState(false);
 
-  const filterTodos = useEffect(() => {
-    const filterDbRef = ref(db, "todos");
-    const qFilter = query(filterDbRef, orderByValue("name"));
-
-    return onValue(qFilter, (snapshot) => {
-      const filteredTodos = snapshot.val() || {};
-      setTodos(filteredTodos);
-    });
-    // .finally(() => setIsTouched(true));
-  }, []);
+  // const filterTodos = useEffect(() => {
+  //   fetch("http://localhost:3005/todos?_sort=name&_order=asc")
+  //     .then((filteredData) => filteredData.json())
+  //     .then((filteredTodos) => {
+  //       setTodos(filteredTodos);
+  //     });
+  //   .finally(() => setIsTouched(true));
+  // }, [refresh]);
 
   return (
     <div className="wrapper">
@@ -107,25 +117,25 @@ export const App = () => {
         <button onClick={todoSearch}>ПОИСК</button>
       </div>
       <ul>
-        {Object.entries(searchedTodo).map(([id, { name }]) => (
+        {searchedTodo.map(({ id, name }) => (
           <div>
             <li key={id}>{name}</li>
-            <button onClick={reqUpdate}>Отметить сделанным</button>
-            <button onClick={deleteTodo}>Удалить</button>
+            <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+            <button onClick={() => deleteTodo(id)}>Удалить</button>
           </div>
         ))}
       </ul>
       <ul>
-        {Object.entries(todos).map(([id, { name }]) => (
+        {todos.map(({ id, name }) => (
           <div>
             <li key={id}>{name}</li>
-            <button onClick={reqUpdate}>Отметить сделанным</button>
-            <button onClick={deleteTodo}>Удалить</button>
+            <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+            <button onClick={() => deleteTodo(id)}>Удалить</button>
           </div>
         ))}
       </ul>
 
-      <button onClick={filterTodos}>Фильтр</button>
+      <button onClick={setIsTouched(true)}>Фильтр</button>
     </div>
   );
 };
