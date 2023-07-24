@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 export const App = () => {
   //ОСНОВНОЙ КОД
   const [todos, setTodos] = useState([]);
-  const [refresh, setRefresh] = useState(false);
-  const refreshTodos = () => setRefresh(!refresh);
   const [todoValue, setTodoValue] = useState("");
-  const [isTouched, setIsTouched] = useState(false);
+  const [isSorted, setIsSorted] = useState(false);
 
   useEffect(() => {
-    if (!isTouched) {
+    if (!isSorted) {
       fetch("http://localhost:3005/todos")
         .then((loadedData) => loadedData.json())
         .then((loadedTodos) => {
@@ -20,12 +18,11 @@ export const App = () => {
         .then((filteredData) => filteredData.json())
         .then((filteredTodos) => {
           setTodos(filteredTodos);
-        })
-        .finally(() => setIsTouched(false));
+        });
     }
-  }, [refresh]);
+  }, [isSorted]);
 
-  const addTodo = () => {
+  const addTodo = (id) => {
     fetch("http://localhost:3005/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json;charset=utf-8" },
@@ -34,9 +31,11 @@ export const App = () => {
       }),
     })
       .then((rawResp) => rawResp.json())
-      .then((response) => {
-        console.log("added", response);
-        refreshTodos();
+      .then(() => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -49,9 +48,11 @@ export const App = () => {
       }),
     })
       .then((rawResp) => rawResp.json())
-      .then((response) => {
-        console.log("done update", response);
-        refreshTodos();
+      .then(() => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -60,9 +61,11 @@ export const App = () => {
       method: "DELETE",
     })
       .then((rawResp) => rawResp.json())
-      .then((response) => {
-        console.log("delete update", response);
-        refreshTodos();
+      .then(() => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -135,7 +138,7 @@ export const App = () => {
         ))}
       </ul>
 
-      <button onClick={setIsTouched(true)}>Фильтр</button>
+      <button onClick={() => setIsSorted(!isSorted)}>Фильтр</button>
     </div>
   );
 };
