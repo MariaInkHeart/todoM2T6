@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Routes, Route, NavLink, useParams, Navigate } from "react-router-dom";
 
 export const App = () => {
   //ОСНОВНОЙ КОД
@@ -32,7 +33,7 @@ export const App = () => {
     })
       .then((rawResp) => rawResp.json())
       .then(() => {
-        setTodos(todos.filter((todo) => todo.id !== id));
+        setTodos(todos);
       })
       .catch((error) => {
         console.log(error);
@@ -49,7 +50,7 @@ export const App = () => {
     })
       .then((rawResp) => rawResp.json())
       .then(() => {
-        setTodos(todos.filter((todo) => todo.id !== id));
+        setTodos(todos);
       })
       .catch((error) => {
         console.log(error);
@@ -80,21 +81,9 @@ export const App = () => {
       });
   }, [searchedTodoValue]);
 
-  // ФИЛЬТР
-  // const [isTouched, setIsTouched] = useState(false);
-
-  // const filterTodos = useEffect(() => {
-  //   fetch("http://localhost:3005/todos?_sort=name&_order=asc")
-  //     .then((filteredData) => filteredData.json())
-  //     .then((filteredTodos) => {
-  //       setTodos(filteredTodos);
-  //     });
-  //   .finally(() => setIsTouched(true));
-  // }, [refresh]);
-
-  return (
-    <div className="wrapper">
-      <h2 className="header">To-do-do-dos</h2>
+  //Route
+  const MainPage = () => (
+    <div>
       <div className="add-line">
         <input
           className="add-input"
@@ -122,23 +111,86 @@ export const App = () => {
       <ul>
         {searchedTodo.map(({ id, name }) => (
           <div>
-            <li key={id}>{name}</li>
-            <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
-            <button onClick={() => deleteTodo(id)}>Удалить</button>
+            <li key={id}>
+              <NavLink to={`/task/${id}`}>{name}</NavLink>
+            </li>
+            {/* <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+<button onClick={() => deleteTodo(id)}>Удалить</button> */}
           </div>
         ))}
       </ul>
       <ul>
         {todos.map(({ id, name }) => (
           <div>
-            <li key={id}>{name}</li>
-            <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
-            <button onClick={() => deleteTodo(id)}>Удалить</button>
+            <li key={id}>
+              <NavLink to={`/task/${id}`}>{name}</NavLink>
+            </li>
+            {/* <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+            <button onClick={() => deleteTodo(id)}>Удалить</button> */}
           </div>
         ))}
       </ul>
 
       <button onClick={() => setIsSorted(!isSorted)}>Фильтр</button>
+    </div>
+  );
+
+  //  ПРОБЛЕМНЫЙ КУСОК
+  const [gotTodo, setGotTodo] = useState([]);
+
+  const getTodoFunc = (id) => {
+    fetch(`http://localhost:3005/todos?id=${id}`)
+      .then((gotTodoData) => gotTodoData.json())
+      .then((gotTodos) => {
+        setGotTodo(gotTodos);
+      })
+      .finally(console.log(gotTodo));
+  };
+
+  const ToDo = () => {
+    const params = useParams();
+    const todoById = getTodoFunc(params.id);
+
+    // if (!todoById) {
+    //   return <Navigate to="/404" />;
+    // }
+
+    const { name, id } = todoById;
+
+    return;
+    gotTodo.map(({ id, name }) => (
+      <div>
+        <li key={id}>
+          {id}-{name}
+        </li>
+        <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+        <button onClick={() => deleteTodo(id)}>Удалить</button>
+      </div>
+    ));
+  };
+
+  //404 error
+  const NotFound = () => <div>Такой страницы не существует</div>;
+
+  return (
+    <div className="wrapper">
+      <h2 className="header">To-do-do-dos</h2>
+      <div className="menu">
+        <h4>Меню</h4>
+        <ul className="MenuList">
+          <li>
+            <NavLink to="/">Главная</NavLink>
+          </li>
+        </ul>
+      </div>
+
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/task/:id" element={<ToDo />} />
+
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/404" />} />
+      </Routes>
     </div>
   );
 };

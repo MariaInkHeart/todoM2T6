@@ -34,3 +34,13 @@
   align-items: center;
   flex-direction: column;
 }
+
+.menu {
+  background-color: rgb(147, 116, 176);
+  align-items: center;
+  display: inline-flex;
+}
+
+:global.active {
+  text-decoration: none;
+}
