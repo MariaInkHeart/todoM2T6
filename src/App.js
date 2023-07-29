@@ -136,7 +136,7 @@ export const App = () => {
   );
 
   //  ПРОБЛЕМНЫЙ КУСОК
-  const [gotTodo, setGotTodo] = useState([]);
+  const [gotTodo, setGotTodo] = useState({});
 
   const getTodoFunc = (id) => {
     fetch(`http://localhost:3005/todos/${id}`)
@@ -151,24 +151,28 @@ export const App = () => {
     const params = useParams();
     const todoById = getTodoFunc(params.id);
 
-    // if (!todoById) {
-    //   return <Navigate to="/404" />;
-    // }
+    if (!todoById) {
+      return <Navigate to="/404" />;
+    }
 
-    const { id, name } = todoById;
+    // const { id, name } = todoById;
 
-    return gotTodo.map(() => (
+    return (
       <div>
-        <li>
-          <NavLink to="/">Главная</NavLink>
-        </li>
-        <li key={id}>
-          {id}-{name}
-        </li>
-        <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
-        <button onClick={() => deleteTodo(id)}>Удалить</button>
+        {gotTodo.map((id, name) => (
+          <div>
+            <li>
+              <NavLink to="/">Главная</NavLink>
+            </li>
+            <li key={id}>
+              {id}-{name}
+            </li>
+            <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
+            <button onClick={() => deleteTodo(id)}>Удалить</button>
+          </div>
+        ))}
       </div>
-    ));
+    );
   };
 
   //404 error
@@ -177,7 +181,7 @@ export const App = () => {
       <li>
         <NavLink to="/">Главная</NavLink>
       </li>
-      Такой страницы не существует{" "}
+      <h3>Такой страницы не существует</h3>
     </div>
   );
 
