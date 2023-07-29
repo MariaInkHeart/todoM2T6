@@ -139,7 +139,7 @@ export const App = () => {
   const [gotTodo, setGotTodo] = useState([]);
 
   const getTodoFunc = (id) => {
-    fetch(`http://localhost:3005/todos?id=${id}`)
+    fetch(`http://localhost:3005/todos/${id}`)
       .then((gotTodoData) => gotTodoData.json())
       .then((gotTodos) => {
         setGotTodo(gotTodos);
@@ -155,11 +155,13 @@ export const App = () => {
     //   return <Navigate to="/404" />;
     // }
 
-    const { name, id } = todoById;
+    const { id, name } = todoById;
 
-    return;
-    gotTodo.map(({ id, name }) => (
+    return gotTodo.map(() => (
       <div>
+        <li>
+          <NavLink to="/">Главная</NavLink>
+        </li>
         <li key={id}>
           {id}-{name}
         </li>
@@ -170,19 +172,18 @@ export const App = () => {
   };
 
   //404 error
-  const NotFound = () => <div>Такой страницы не существует</div>;
+  const NotFound = () => (
+    <div>
+      <li>
+        <NavLink to="/">Главная</NavLink>
+      </li>
+      Такой страницы не существует{" "}
+    </div>
+  );
 
   return (
     <div className="wrapper">
       <h2 className="header">To-do-do-dos</h2>
-      <div className="menu">
-        <h4>Меню</h4>
-        <ul className="MenuList">
-          <li>
-            <NavLink to="/">Главная</NavLink>
-          </li>
-        </ul>
-      </div>
 
       <Routes>
         <Route path="/" element={<MainPage />} />
