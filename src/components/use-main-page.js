@@ -1,7 +1,5 @@
 import { useGetTodo } from "./use-get";
-import { useAddTodo } from "./use-addTodo";
-import { useSearch } from "./use-search";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 export const useMainPage = () => {
@@ -11,12 +9,34 @@ export const useMainPage = () => {
   const [isSorted, setIsSorted] = useState(false);
 
   const { todos, setTodos } = useGetTodo(isSorted);
-  const { addTodo } = useAddTodo(todoValue, setTodos, todos);
 
+  const addTodo = () => {
+    fetch("http://localhost:3005/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify({
+        name: todoValue,
+      }),
+    })
+      .then((rawResp) => rawResp.json())
+      .then(() => {
+        setTodos(todos);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   //ПОИСК ДЕЛ
   const [searchedTodoValue, setSearchedTodoValue] = useState("");
+  const [searchedTodo, setSearchedTodo] = useState([]);
 
-  const { searchedTodo, todoSearch } = useSearch(searchedTodoValue);
+  const todoSearch = useEffect(() => {
+    fetch(`http://localhost:3005/todos?name=${searchedTodoValue}`)
+      .then((searchedData) => searchedData.json())
+      .then((searchedTodos) => {
+        setSearchedTodo(searchedTodos);
+      });
+  }, [searchedTodoValue]);
 
   const MainPage = () => (
     <div>
