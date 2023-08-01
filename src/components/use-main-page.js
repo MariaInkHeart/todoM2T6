@@ -16,6 +16,7 @@ export const useMainPage = () => {
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify({
         name: todoValue,
+        isCompleted: false,
       }),
     })
       .then((rawResp) => rawResp.json())
@@ -37,6 +38,7 @@ export const useMainPage = () => {
         setSearchedTodo(searchedTodos);
       });
   }, [searchedTodoValue]);
+  const length = 10;
 
   const MainPage = () => (
     <div>
@@ -68,7 +70,9 @@ export const useMainPage = () => {
         {searchedTodo.map(({ id, name }) => (
           <div>
             <li key={id}>
-              <NavLink to={`/task/${id}`}>{name}</NavLink>
+              <NavLink to={`/task/${id}`}>
+                {name.length > length ? name.substring(0, 10) + "..." : name}
+              </NavLink>
             </li>
           </div>
         ))}
@@ -77,7 +81,9 @@ export const useMainPage = () => {
         {todos.map(({ id, name }) => (
           <div>
             <li key={id}>
-              <NavLink to={`/task/${id}`}>{name}</NavLink>
+              <NavLink to={`/task/${id}`}>
+                {name.length > length ? name.substring(0, 10) + "..." : name}
+              </NavLink>
             </li>
           </div>
         ))}

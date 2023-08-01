@@ -9,10 +9,10 @@ export const useToDo = () => {
 
   const reqUpdate = (id) => {
     fetch(`http://localhost:3005/todos/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json;charset=utf-8" },
       body: JSON.stringify({
-        name: "Выполнено",
+        isCompleted: true,
       }),
     })
       .then((rawResp) => rawResp.json())
@@ -53,10 +53,10 @@ export const useToDo = () => {
         });
     }, [taskId, navigate]);
 
-    const { id, name } = gotTodo;
+    const { id, name, isCompleted } = gotTodo;
+
     return (
       <div>
-        {/* {gotTodo.map((name, id) => ( */}
         <div>
           <li>
             <NavLink to="/">Главная</NavLink>
@@ -64,11 +64,14 @@ export const useToDo = () => {
           <li key={id}>
             <li> id: {id}</li>
             <li>Задача: {name}</li>
+            <label>
+              <input type="checkbox" checked={isCompleted ? true : false} />
+              {isCompleted ? "задача выполнена" : "задача не выполнена"}
+            </label>
           </li>
           <button onClick={() => reqUpdate(id)}>Отметить сделанным</button>
           <button onClick={() => deleteTodo(id)}>Удалить</button>
         </div>
-        {/* ))} */}
       </div>
     );
   };

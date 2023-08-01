@@ -2,11 +2,13 @@
   "todos": [
     {
       "name": "test",
+      "isCompleted": false,
       "id": "001"
     },
     {
-      "name": "ccc",
-      "id": "lmopiQt"
+      "name": "Aaaaaaaaaaaaaaa",
+      "isCompleted": true,
+      "id": "4gZB6fC"
     }
   ]
 }
